@@ -6,11 +6,14 @@ public class Potion {
     private String name;
     private List<String> requiredIngredients;
     private int difficulty;
+    private int Damage;
+    
 
-    public Potion(String name, List<String> requiredIngredients, int difficulty) {
+    public Potion(String name, List<String> requiredIngredients, int difficulty,int Damage) {
         this.name = name;
         this.requiredIngredients = requiredIngredients;
         this.difficulty = difficulty;
+        this.Damage=Damage;
     }
 
     public String getName() {
@@ -26,7 +29,11 @@ public class Potion {
     }
 
     public boolean matchesRecipe(List<String> ingredientsUsed) {
+        
         return requiredIngredients.equals(ingredientsUsed);
+    }
+    public int getDamage() {
+        return Damage;
     }
 
     @Override
