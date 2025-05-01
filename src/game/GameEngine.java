@@ -6,7 +6,7 @@ import utils.ConsoleUI;
 
 public class GameEngine {
     private Player player;
-    private Inventory inventory;
+    public Inventory inventory;
     private Cauldron cauldron;
     private RecipeFactory recipeFactory;
 
@@ -14,6 +14,8 @@ public class GameEngine {
         ConsoleUI.showWelcome();
         player = new Player(ConsoleUI.getPlayerName());
         Inventory inventory = new Inventory(player.getLevel());
+        this.inventory = inventory; // Initialize inventory with player level
+        ConsoleUI.displayIngredients(inventory.getAvailableIngredients(player)); // Show available ingredients
 
         recipeFactory = new RecipeFactory();
         cauldron = new Cauldron(inventory, recipeFactory, player);
@@ -26,8 +28,23 @@ public class GameEngine {
             switch (choice) {
                 case 1 -> cauldron.startMixing();
                 case 2 -> player.viewStats();
-                case 3 -> playing = false;
-                case 4 -> player.viewBrewedPotions();
+                case 3 -> player.viewBrewedPotions();
+                case 5 -> inventory.viewIngredientStack();
+                case 6 -> {
+                    boolean inGameMenu = true;
+                    while (inGameMenu) {
+                        ConsoleUI.GameMenu();
+                        int gameMenuChoice = ConsoleUI.getChoice();
+                        switch (gameMenuChoice) {
+                            case 1 -> player.fight(); // Fight with a monster
+                            case 2 -> player.GameStats(); 
+                            case 3 -> inGameMenu = false; // Exit game menu
+                            default -> System.out.println("Invalid choice!");
+                        }
+                    }
+                    ConsoleUI.showMenu(); // Show main menu after exiting game menu
+                }
+                case 7 -> playing = false;
 
                 default -> System.out.println("Invalid choice!");
             }

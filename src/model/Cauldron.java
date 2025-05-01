@@ -7,7 +7,7 @@ import utils.ConsoleUI;
 import java.util.*;
 
 public class Cauldron {
-    private Inventory inventory;
+    public Inventory inventory;
     private RecipeFactory recipeFactory;
     private Player player;
 
@@ -39,7 +39,6 @@ public class Cauldron {
 
             System.out.println("Added: " + selected.getName());
         }
-
         brewPotion();
     }
 
@@ -48,6 +47,7 @@ public class Cauldron {
         for (Ingredient ing : inventory.getIngredientStack()) {
             inputIngredients.add(ing.getName());
         }
+        Collections.sort(inputIngredients); // Sort ingredients alphabetically
 
         Potion result = recipeFactory.getPotionByIngredients(inputIngredients);
 
@@ -56,6 +56,8 @@ public class Cauldron {
             player.updateScore(result.getDifficulty() * 10); // reward score
             player.addBrewedPotion(result);
             player.checkLevelUp();
+        } else if (inputIngredients.isEmpty()) {
+            System.out.println("⚠️ No ingredients added. Please add ingredients to brew a potion.");
         } else {
             System.out.println("💥 The cauldron explodes! Invalid recipe.");
         }
