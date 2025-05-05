@@ -1,8 +1,8 @@
 package model;
 
-import game.Player;
-
 import java.util.*;
+
+import game.Player;
 
 public class Inventory {
     private Stack<Ingredient> ingredientStack = new Stack<>();
@@ -14,7 +14,7 @@ public class Inventory {
             new Ingredient("Wolfsbane", "Strength"),
             new Ingredient("Goblin Ear", "Speed"),             // Unlock at level 2
             new Ingredient("Basilisk Fang", "Poison"),         // Unlock at level 3
-            new Ingredient("Mermaid Tears", "Healing")         // Unlock at level 4
+            new Ingredient("Mermaid Tears", "Healing")       // Unlock at level 4
     );
 
     private int maxCapacity;
