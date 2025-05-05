@@ -1,0 +1,6 @@
+username=Hero
+password=9681e92e5c051821b2b6e0928100f125c672bf11b4ae788b4e79d63c39f2606a
+level=1
+experience=20
+credits=100
+health=92
