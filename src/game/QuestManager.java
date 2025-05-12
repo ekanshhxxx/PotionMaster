@@ -2,17 +2,18 @@ package game;
 
 import model.Quest;
 // import model.Potion;
-import java.util.*;
+import java.util.Iterator;
+import DSA.*;
 
 public class QuestManager {
-    private List<Quest> activeQuests;
-    private List<Quest> completedQuests;
-    private Map<String, Quest> availableQuests;
+    private ArrayList<Quest> activeQuests;
+    private ArrayList<Quest> completedQuests;
+    private MapLinkedList<String, Quest> availableQuests;
     
     public QuestManager() {
         activeQuests = new ArrayList<>();
         completedQuests = new ArrayList<>();
-        availableQuests = new HashMap<>();
+        availableQuests = new MapLinkedList<>();
         initializeQuests();
     }
     
@@ -53,16 +54,16 @@ public class QuestManager {
     }
     
     public void checkQuestProgress(Player player) {
-        Iterator<Quest> iterator = activeQuests.iterator();
-        while (iterator.hasNext()) {
-            Quest quest = iterator.next();
+        for (int i = activeQuests.size() - 1; i >= 0; i--) {
+            Quest quest = activeQuests.get(i);
             if (quest.checkCompletion(player)) {
                 quest.giveReward(player);
                 completedQuests.add(quest);
-                iterator.remove();
+                activeQuests.remove(i);
             }
         }
     }
+    
     
     public void displayAvailableQuests() {
         System.out.println("\n===== AVAILABLE QUESTS =====");
@@ -106,16 +107,16 @@ public class QuestManager {
         System.out.println("   ID: " + quest.getId());
     }
     
-    public List<String> getActiveQuestIds() {
-        List<String> ids = new ArrayList<>();
+    public ArrayList<String> getActiveQuestIds() {
+        ArrayList<String> ids = new ArrayList<>();
         for (Quest quest : activeQuests) {
             ids.add(quest.getId());
         }
         return ids;
     }
 
-    public List<String> getCompletedQuestIds() {
-        List<String> ids = new ArrayList<>();
+    public ArrayList<String> getCompletedQuestIds() {
+        ArrayList<String> ids = new ArrayList<>();
         for (Quest quest : completedQuests) {
             ids.add(quest.getId());
         }

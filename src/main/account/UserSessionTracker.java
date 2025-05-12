@@ -2,9 +2,9 @@ package main.account;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import DSA.*;
+
 
 public class UserSessionTracker {
     private static final String SESSION_LOG_FILE = "SESSIONS/session_logs.txt";
@@ -21,7 +21,7 @@ public class UserSessionTracker {
         File logFile = new File(SESSION_LOG_FILE);
         if (!logFile.exists()) {
             try {
-                List<UserSession> emptySessions = new ArrayList<>();
+                ArrayList<UserSession> emptySessions = new ArrayList<>();
                 saveSessionLogs(emptySessions);
             } catch (IOException e) {
                 System.err.println("Error initializing session log file: " + e.getMessage());
@@ -77,7 +77,7 @@ public class UserSessionTracker {
     }
     
     public static UserSession createSession(String username) throws IOException {
-        List<UserSession> sessions = loadSessionLogs();
+        ArrayList<UserSession> sessions = loadSessionLogs();
         UserSession newSession = new UserSession(username);
         sessions.add(newSession);
         saveSessionLogs(sessions);
@@ -85,7 +85,7 @@ public class UserSessionTracker {
     }
     
     public static void closeSession(String username, int xpGained, int levelsGained) throws IOException {
-        List<UserSession> sessions = loadSessionLogs();
+        ArrayList<UserSession> sessions = loadSessionLogs();
         
         // Find the user's most recent open session
         for (int i = sessions.size() - 1; i >= 0; i--) {
@@ -99,8 +99,8 @@ public class UserSessionTracker {
         saveSessionLogs(sessions);
     }
     
-    private static List<UserSession> loadSessionLogs() throws IOException {
-        List<UserSession> sessions = new ArrayList<>();
+    private static ArrayList<UserSession> loadSessionLogs() throws IOException {
+        ArrayList<UserSession> sessions = new ArrayList<>();
         File file = new File(SESSION_LOG_FILE);
         
         if (!file.exists() || file.length() == 0) {
@@ -130,7 +130,7 @@ public class UserSessionTracker {
         return sessions;
     }
     
-    private static void saveSessionLogs(List<UserSession> sessions) throws IOException {
+    private static void saveSessionLogs(ArrayList<UserSession> sessions) throws IOException {
         try (PrintWriter writer = new PrintWriter(new FileWriter(SESSION_LOG_FILE))) {
             for (UserSession session : sessions) {
                 // Format: username|loginTime|logoutTime|duration|xpGained|levelsGained
@@ -149,7 +149,7 @@ public class UserSessionTracker {
     // Utility method to view session logs - helpful for debugging
     public static void viewSessionLogs() {
         try {
-            List<UserSession> sessions = loadSessionLogs();
+            ArrayList<UserSession> sessions = loadSessionLogs();
             System.out.println("\n===== SESSION LOGS =====");
             if (sessions.isEmpty()) {
                 System.out.println("No sessions recorded.");

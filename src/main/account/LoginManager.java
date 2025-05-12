@@ -12,6 +12,7 @@ public class LoginManager {
         this.scanner = new Scanner(System.in);
     }
     
+    // in colsole .ui
     public PlayerAccount showLoginScreen() {
         while (true) {
             System.out.println("===== POTION MASTER =====");

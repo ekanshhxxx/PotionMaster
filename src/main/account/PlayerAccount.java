@@ -1,49 +1,36 @@
 package main.account;
 
+import game.Player;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+
+import DSA.*;
 
 public class PlayerAccount implements Serializable {
     private static final long serialVersionUID = 2L;
-    
+
+    private Player player;
     private String username;
     private String passwordHash; // Store hashed password, never plain text
-    private int level;
-    private int experience;
-    private int healthPoints;
-    private int credits;
-    private String rank;
+    // private Map<String, Integer> ingredients;
     private int initialLevel;
     private int initialXP;
-    private List<String> potions;
-    private Map<String, Integer> ingredients;
     private long lastLoginTime;
     private long totalPlayTime;
-    private List<String> activeQuests = new ArrayList<>();
-private List<String> completedQuests = new ArrayList<>();
+    private ArrayList<String> savedPotions = new ArrayList<>();
+    private ArrayList<String> activeQuests = new ArrayList<>();
+private ArrayList<String> completedQuests = new ArrayList<>();
 
     
     public PlayerAccount(String username, String passwordHash) {
         this.username = username;
         this.passwordHash = passwordHash;
-        this.level = 1;
-        this.experience = 0;
-        this.healthPoints = 100;
-        this.credits = 50;
-        this.rank = "Novice";
-        this.potions = new ArrayList<>();
-        this.ingredients = new HashMap<>();
+        this.player= new Player(username);
+        this.savedPotions = new ArrayList<>();
         this.lastLoginTime = System.currentTimeMillis();
         this.totalPlayTime = 0;
     }
 
-    public void saveInitialStats() {
-        this.initialLevel = this.level;
-        this.initialXP = this.experience;
-    }
     
     // Getters and setters
     public String getUsername() {
@@ -57,120 +44,7 @@ private List<String> completedQuests = new ArrayList<>();
     public boolean validatePassword(String hashedPassword) {
         return this.passwordHash.equals(hashedPassword);
     }
-    
-    public int getLevel() {
-        return level;
-    }
-    
-    public void setLevel(int level) {
-        this.level = level;
-        updateRank(); // Update rank when level changes
-    }
-    
-    public int getExperience() {
-        return experience;
-    }
-    
-    public void setExperience(int experience) {
-        this.experience = experience;
-        
-        // Check if player can level up
-        int requiredXP = level * 100; // Simple progression formula
-        if (experience >= requiredXP) {
-            setLevel(level + 1);
-            this.experience -= requiredXP;
-        }
-    }
-
-    public int getInitialLevel() {
-        return initialLevel;
-    }
-    
-    public int getInitialXP() {
-        return initialXP;
-    }
-    
-    public int getHealthPoints() {
-        return healthPoints;
-    }
-    
-    public void setHealthPoints(int healthPoints) {
-        this.healthPoints = healthPoints;
-    }
-    
-    public int getCredits() {
-        return credits;
-    }
-    
-    public void setCredits(int credits) {
-        this.credits = credits;
-    }
-    
-    public String getRank() {
-        return rank;
-    }
-    
-    public void setRank(String rank) {
-        this.rank = rank;
-    }
-    
-    public String getTier() {
-        if (level >= 46) return "Divine Tier";
-        if (level >= 41) return "Mythic Tier";
-        if (level >= 36) return "Legendary Tier";
-        if (level >= 31) return "Mastery Tier";
-        if (level >= 26) return "Elite Tier";
-        if (level >= 21) return "Specialist Tier";
-        if (level >= 16) return "Adept Tier";
-        if (level >= 11) return "Journeyman Tier";
-        if (level >= 6) return "Apprentice Tier";
-        return "Initiation Tier";
-    }
-    
-    private void updateRank() {
-        if (level >= 46) rank = "Grandmaster Alchemage";
-        else if (level >= 41) rank = "Potion Sage";
-        else if (level >= 36) rank = "Elixir Warden";
-        else if (level >= 31) rank = "Master Brewer";
-        else if (level >= 26) rank = "Arcane Alchemist";
-        else if (level >= 21) rank = "Infusion Adept";
-        else if (level >= 16) rank = "Battle Chemist";
-        else if (level >= 11) rank = "Combat Mixer";
-        else if (level >= 6) rank = "Apprentice Brewer";
-        else rank = "Novice Alchemist";
-    }
-    
-    public List<String> getPotions() {
-        return potions;
-    }
-    
-    public void addPotion(String potion) {
-        this.potions.add(potion);
-    }
-    
-    public void removePotion(String potion) {
-        this.potions.remove(potion);
-    }
-    
-    public Map<String, Integer> getIngredients() {
-        return ingredients;
-    }
-    
-    public void addIngredient(String ingredient, int quantity) {
-        this.ingredients.put(ingredient, this.ingredients.getOrDefault(ingredient, 0) + quantity);
-    }
-    
-    public void removeIngredient(String ingredient, int quantity) {
-        int currentAmount = this.ingredients.getOrDefault(ingredient, 0);
-        int newAmount = Math.max(0, currentAmount - quantity);
-        
-        if (newAmount > 0) {
-            this.ingredients.put(ingredient, newAmount);
-        } else {
-            this.ingredients.remove(ingredient);
-        }
-    }
-    
+      
     public long getLastLoginTime() {
         return lastLoginTime;
     }
@@ -184,16 +58,116 @@ private List<String> completedQuests = new ArrayList<>();
     }
     
     public long getTotalPlayTimeMinutes() {
-        return totalPlayTime / (1000 * 60);
+        long totalPlayTime = System.currentTimeMillis() - lastLoginTime;
+        System.out.println("Total play time: " + totalPlayTime / (1000 * 60) + " minutes");
+        return totalPlayTime / (1000 * 60); // Convert milliseconds to minutes
     }
-
-    public List<String> getActiveQuests() {
+    public ArrayList<String> getActiveQuests() {
         return activeQuests;
     }
     
-    public List<String> getCompletedQuests() {
+    public ArrayList<String> getCompletedQuests() {
         return completedQuests;
     }
+
+    public int getCredits() {
+        return player.getCreads();
+    }
+
+    public int getXp() {
+        int xp = player.getXp();
+        return xp;
+    }
+
+    public int getGameLevel() {
+        return player.getGameLevel();
+    }
+    public int  getHealthPoints() {
+        return player.getHealthLevel();
+    }
+    public int getLevel(){
+        return player.getLevel();
+    }
+
+    public void setLevel(int level) {
+        this.player.setLevel(level);
+    }
+    public void setExperience(int xp) {
+        this.player.setXp(xp);
+    }
+    public void setGameLevel(int gameLevel) {
+        this.player.setGameLevel(gameLevel);
+    }
+    public void setHealthPoints(int healthPoints) {
+        this.player.setHealthLevel(healthPoints);
+    }
+    public void setCredits(int credits) {
+        this.player.setCreads(credits);
+    }
+    public void setTotalPlayTime(long totalPlayTime) {
+        this.totalPlayTime = totalPlayTime;
+    }
+    public void setRank(String rank) {
+        this.player.setRank(rank);
+    }
+    public String getRank() {
+        return player.getRank();
+    }
+    public void setTier(String tier) {
+        this.player.setTier(tier);
+    }
+    public String getTier() {
+        return player.getTier();
+    }
+    public void setDefeatedMonsters(int defeatedMonsters) {
+        this.player.setDefeatedMonsters(defeatedMonsters);
+    }
+    public void setIngredientList(ArrayList<String> ingredients) {
+        this.player.setIngredients(ingredients);
+    }
+    public ArrayList<String> getIngredientList() {
+        return player.getIngredients();
+    }
+    public void setInitialXP(int initialXP) {
+        this.initialXP = initialXP;
+    }
+    public void setInitialLevel(int initialLevel) {
+        this.initialLevel = initialLevel;
+    }
+    public void setInitialGameLevel(int initialGameLevel) {
+        this.player.setGameLevel(initialGameLevel);
+    }
+
+    public void saveInitialStats() {
+        this.initialLevel = player.getLevel();
+        this.initialXP = player.getXp();
+    }
+
+    public int getInitialLevel() {
+        return initialLevel;
+    }
+    public int getInitialXP() {
+        return initialXP;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+    public ArrayList<String> getPotions() {
+        return savedPotions;
+    }
+    public void addPotion(String potion) {
+        this.savedPotions.add(potion);
+    }
+    
+    public void removePotion(String potion) {
+        this.savedPotions.remove(potion);
+    }
+
+    
     
     public void addActiveQuest(String questId) {
         if (!activeQuests.contains(questId)) {
@@ -216,13 +190,11 @@ private List<String> completedQuests = new ArrayList<>();
     this.activeQuests.clear();
     this.completedQuests.clear();
 }
-
-    // Add this method to PlayerAccount class
 public void clearPotions() {
-    if (this.potions != null) {
-        this.potions.clear();
+    if (this.savedPotions != null) {
+        this.savedPotions.clear();
     } else {
-        this.potions = new ArrayList<>();
+        this.savedPotions = new ArrayList<>();
     }
 }
     
@@ -230,14 +202,15 @@ public void clearPotions() {
     public String toString() {
         return "PlayerAccount{" +
                "username='" + username + '\'' +
-               ", level=" + level +
-               ", rank='" + rank + '\'' +
-               ", tier='" + getTier() + '\'' +
-               ", experience=" + experience +
-               ", health=" + healthPoints +
-               ", credits=" + credits +
-               ", potions=" + potions.size() +
-               ", ingredients=" + ingredients.size() +
+               ", level=" + player.getLevel() +
+               ", rank='" + player.getRank() + '\'' +
+               ", gameLevel=" + player.getGameLevel() +
+               ", tier='" + player.getTier() + '\'' +
+               ", experience=" + player.getXp() +
+               ", health=" + player.getHealthLevel() +
+               ", credits=" + player.getCreads() +
+               ", potions=" + savedPotions.size() +
+               ", ingredients=" + player.ingredients +
                ", totalPlayTime=" + getTotalPlayTimeMinutes() + " minutes" +
                '}';
     }

@@ -1,12 +1,12 @@
 package model;
 
-import java.util.*;
+import DSA.*;
 
 import game.Player;
 
 public class Inventory {
     private Stack<Ingredient> ingredientStack = new Stack<>();
-    private final List<Ingredient> allIngredients = List.of(
+    private final ArrayList<Ingredient> allIngredients = ArrayList.of(
             new Ingredient("Mandrake Root", "Energy Boost"),
             new Ingredient("Dragon Scale", "Fire Resistance"),
             new Ingredient("Moon Dust", "Night Vision"),
@@ -27,7 +27,7 @@ public class Inventory {
     }
 
     // Dynamically returns ingredients unlocked at current level
-    public List<Ingredient> getAvailableIngredients(Player player) {
+    public ArrayList<Ingredient> getAvailableIngredients(Player player) {
         int unlockedCount = Math.min(5 + (player.getLevel() - 1), allIngredients.size());
         return allIngredients.subList(0, unlockedCount);
     }
@@ -38,33 +38,6 @@ public class Inventory {
             ingredientStack.push(ing);
         }
     }
-    // public void addPotionToInventory(Potion potion) {
-    //     if (potionStack.size() >= potionCapacity) {
-    //         System.out.println("⚠️ Inventory is full! Max capacity of " + potionCapacity + " reached.");
-    //         return;
-    //     }
-    //     potionStack.push(potion);
-    //     System.out.println("Potion added to inventory: " + potion.getName());
-    // }
-
-    // public Potion usePotion() {
-    //     if (potionStack.isEmpty()) {
-    //         System.out.println("❌ No potions in inventory!");
-    //         return null;
-    //     }
-    //     return potionStack.pop();
-    // }
-
-    // public void viewPotions() {
-    //     System.out.println("🧪 Your Potions:");
-    //     if (potionStack.isEmpty()) {
-    //         System.out.println("No potions in inventory.");
-    //         return;
-    //     }
-    //     for (Potion potion : potionStack) {
-    //         System.out.println("- " + potion.getName());
-    //     }
-    // }
 
     public Stack<Ingredient> getIngredientStack() {
         return ingredientStack;
@@ -75,7 +48,7 @@ public class Inventory {
     }
 
     // Optional: In case you need to access all ingredients or for future UI
-    public List<Ingredient> getAllIngredients() {
+    public ArrayList<Ingredient> getAllIngredients() {
         return allIngredients;
     }
 

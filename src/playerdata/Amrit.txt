@@ -1,7 +1,0 @@
-username=Amrit
-password=6f5fa43cdc2b03c30a736ca86b4e97634c3b2bfc2241d42cebd12aad56ec72d2
-level=1
-experience=70
-credits=400
-health=68
-completedQuests=brew1

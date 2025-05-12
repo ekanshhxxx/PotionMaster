@@ -4,8 +4,7 @@ import factory.RecipeFactory;
 import game.Player;
 import utils.ConsoleUI;
 import utils.InputManager;
-
-import java.util.*;
+import DSA.*;
 
 public class Cauldron {
     public Inventory inventory;
@@ -23,7 +22,7 @@ public class Cauldron {
         ConsoleUI.displayIngredients(inventory.getAvailableIngredients(player));
         
         System.out.println("Add ingredients by number (type -1 to brew):");
-        List<Ingredient> available = inventory.getAvailableIngredients(player);
+        ArrayList<Ingredient> available = inventory.getAvailableIngredients(player);
         
         boolean mixing = true;
         while (mixing) {
@@ -50,17 +49,14 @@ public class Cauldron {
                 InputManager.clearBuffer();
             }
         }
-<<<<<<< HEAD
         
         // Once we exit the loop, brew the potion
-=======
->>>>>>> 8afef9687c7cdae725db756cf7d3433f1997f942
         brewPotion();
     }
 
     private void brewPotion() {
-        List<String> inputIngredients = new ArrayList<>();
-        List<Ingredient> cauldronContents = inventory.getIngredientStack();
+        ArrayList<String> inputIngredients = new ArrayList<>();
+        ArrayList<Ingredient> cauldronContents = inventory.getIngredientStack().toArrayList();
         
         if (cauldronContents.isEmpty()) {
             System.out.println("⚠️ No ingredients added. Please add ingredients to brew a potion.");
@@ -70,7 +66,7 @@ public class Cauldron {
         for (Ingredient ing : cauldronContents) {
             inputIngredients.add(ing.getName());
         }
-        Collections.sort(inputIngredients); // Sort ingredients alphabetically
+        // inputIngredients.bubbleSort(); // Sort ingredients alphabetically
 
         Potion result = recipeFactory.getPotionByIngredients(inputIngredients);
 
@@ -79,7 +75,6 @@ public class Cauldron {
             player.updateScore(result.getDifficulty() * 10); // reward score
             player.addBrewedPotion(result);
             player.checkLevelUp();
-<<<<<<< HEAD
             
             // Display potion details
             System.out.println("📊 Potion Details:");
@@ -87,10 +82,6 @@ public class Cauldron {
             System.out.println("  Effect: " + result.getEffect());
             System.out.println("  Difficulty: " + result.getDifficulty());
             System.out.println("  Damage: " + result.getDamage());
-=======
-        } else if (inputIngredients.isEmpty()) {
-            System.out.println("⚠️ No ingredients added. Please add ingredients to brew a potion.");
->>>>>>> 8afef9687c7cdae725db756cf7d3433f1997f942
         } else {
             System.out.println("💥 The cauldron explodes! Invalid recipe.");
         }
@@ -101,7 +92,7 @@ public class Cauldron {
     // Helper method to display all available recipes (can be used for hints)
     public void showRecipeBook() {
         System.out.println("\n📖 Recipe Book:");
-        List<Recipe> recipes = recipeFactory.getAllRecipes();
+        ArrayList<Recipe> recipes = recipeFactory.getAllRecipes();
         
         if (recipes.isEmpty()) {
             System.out.println("No recipes available.");

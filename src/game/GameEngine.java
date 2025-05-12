@@ -6,7 +6,7 @@ import utils.ConsoleUI;
 import main.account.PlayerAccount;
 import utils.InputManager;
 
-import java.util.List;
+import DSA.*;
 
 public class GameEngine {
     private Player player;
@@ -33,13 +33,14 @@ public class GameEngine {
         if (playerAccount != null) {
             // Create player using account data
             player = new Player(playerAccount.getUsername());
-            player.updateScore(playerAccount.getExperience());
+            player.updateScore(playerAccount.getXp());
             player.setLevel(playerAccount.getLevel());
             player.Creads = playerAccount.getCredits();
             player.HealthLevel = playerAccount.getHealthPoints();
-            
+            player.setGameLevel(playerAccount.getGameLevel());
+
             // ADDED: Load saved potions from player account
-            List<String> savedPotions = playerAccount.getPotions();
+            ArrayList<String> savedPotions = playerAccount.getPotions();
             if (savedPotions != null && !savedPotions.isEmpty()) {
                 System.out.println("Loading your saved potions...");
                 for (String potionName : savedPotions) {
@@ -68,8 +69,7 @@ public class GameEngine {
         }
         
         Inventory inventory = new Inventory(player.getLevel());
-        this.inventory = inventory; // Initialize inventory with player level
-        ConsoleUI.displayIngredients(inventory.getAvailableIngredients(player)); // Show available ingredients
+        this.inventory = inventory; // Initialize inventory with player level // Show available ingredients
 
         recipeFactory = new RecipeFactory();
         cauldron = new Cauldron(inventory, recipeFactory, player);
@@ -82,7 +82,7 @@ public class GameEngine {
                 case 1 -> cauldron.startMixing();
                 case 2 -> player.viewStats();
                 case 3 -> player.viewBrewedPotions();
-                case 5 -> inventory.viewIngredientStack();
+                case 5 -> inventory.viewInventory(player);
                 case 6 -> {
                     boolean inGameMenu = true;
                     while (inGameMenu) {
@@ -95,27 +95,14 @@ public class GameEngine {
                             default -> System.out.println("Invalid choice!");
                         }
                     }
-<<<<<<< HEAD
                 }
                 case 7 -> handleQuestMenu(); // NEW: Quest board option
-                case 8 -> playing = false;   // Exit moved to option 8
-=======
-                    ConsoleUI.showMenu(); // Show main menu after exiting game menu
+                case 8 -> {
+                    playing = false;
+                    exit();  // ensure session end, XP/level gain summary, logout
                 }
-                case 7 -> playing = false;
-
->>>>>>> 8afef9687c7cdae725db756cf7d3433f1997f942
+                // Exit moved to option 8
                 default -> System.out.println("Invalid choice!");
-            }
-        }
-
-        // Save player data before exiting if logged in
-        if (playerAccount != null) {
-            try {
-                savePlayerData();
-                System.out.println("Your progress has been saved.");
-            } catch (Exception e) {
-                System.err.println("Error saving progress: " + e.getMessage());
             }
         }
         
@@ -126,22 +113,28 @@ public class GameEngine {
 private Potion createPotionFromName(String name) {
     // Create potions with proper properties based on name
     switch (name) {
+        case "Invisibility Potion":
+            return new Potion("Invisibility Potion", 30,"Makes the drinker invisible for a short time");
         case "Fire Shield":
-            return new Potion("Fire Shield", 30);
-        case "Ice Blast":
-            return new Potion("Ice Blast", 25);
-        case "Health Potion":
-            return new Potion("Health Potion", 20);
-        case "Thunder Strike":
-            return new Potion("Thunder Strike", 35);
-        case "Earth Armor":
-            return new Potion("Earth Armor", 30);
-        case "Venom Splash":
-            return new Potion("Venom Splash", 28);
+            return new Potion("Fire Shield", 20,"Provides protection against fire damage");
+        case "Energy Blast":
+            return new Potion("Energy Blast", 25,"Creates a surge of offensive energy");
+        case "Speed Surge":
+            return new Potion("Speed Surge", 30,"Greatly increases movement speed");
+        case "Venom Vial":
+            return new Potion("Venom Vial", 35,"Inflicts poison damage over time");
+        case "Ocean's Grace":
+            return new Potion("Ocean's Grace", 40,"Allows breathing underwater");
+        case "Revive Shield":
+            return new Potion("Revive Shield", 50,"Revives the user when fatally wounded");
+        case "Nightmare Brew":
+            return new Potion("Nightmare Brew", 55,"Causes terrifying hallucinations to enemies");
+        case "Healing Elixir":
+            return new Potion("Healing Elixir", 15,"Heals a small amount of health");
         // Add other potion types as needed
         default:
             System.out.println("Warning: Unknown potion type '" + name + "', creating generic version");
-            return new Potion(name, 15);
+            return new Potion(name, 0, "No effect specified"); // Default potion with no effect
     }
 }
     
@@ -181,14 +174,19 @@ private Potion createPotionFromName(String name) {
             }
         }
     }
-    
     private void savePlayerData() {
         try {
             // Update account with player's current stats
-            playerAccount.setExperience(player.GameXP);
+            playerAccount.setExperience(player.getXp());
             playerAccount.setLevel(player.getLevel());
             playerAccount.setCredits(player.Creads);
             playerAccount.setHealthPoints(player.HealthLevel);
+            playerAccount.setGameLevel(player.getGameLevel());            
+            playerAccount.setRank(player.getRank());
+            playerAccount.setTier(player.getTier());
+            playerAccount.setDefeatedMonsters(player.getDefeatedMonsters());
+            playerAccount.setIngredientList(player.getIngredients());
+            
             
             // MODIFIED: Clear existing potions before saving current ones
             playerAccount.clearPotions(); // Make sure to add this method to PlayerAccount
@@ -197,8 +195,7 @@ private Potion createPotionFromName(String name) {
             for (Potion potion : player.getBrewedPotions()) {
                 playerAccount.addPotion(potion.getName());
             }
-            
-            // ADDED: Save quest data
+            // Update account with player's current stats// ADDED: Save quest data
             playerAccount.clearQuests(); // Make sure to add this method to PlayerAccount
             
             // Save active quests
@@ -223,25 +220,25 @@ private Potion createPotionFromName(String name) {
     public void saveProgress() {
         if (playerAccount != null) {
             try {
+                // Save player data first
                 savePlayerData();
-                System.out.println("Game progress saved successfully.");
+                
+                System.out.println("Progress saved successfully!");
             } catch (Exception e) {
-                System.err.println("Failed to save game progress: " + e.getMessage());
+                System.err.println("Error saving progress: " + e.getMessage());
             }
         } else {
-            System.out.println("You need to be logged in to save your progress.");
+            System.out.println("No account logged in. Progress cannot be saved.");
         }
     }
 
     public void exit() {
         if (playerAccount != null) {
-            try {
-                // Calculate stats gained during this session
-                int xpGained = player.GameXP - playerAccount.getInitialXP();
-                int levelsGained = player.getLevel() - playerAccount.getInitialLevel();
-                
+            int xpGained = player.getXp() - playerAccount.getInitialXP();
+            int levelsGained = player.getLevel() - playerAccount.getInitialLevel();
+            try {                
                 // Save player data first
-                savePlayerData();
+                saveProgress();
                 
                 // Close the session properly
                 accountManager.logout(playerAccount.getUsername());
