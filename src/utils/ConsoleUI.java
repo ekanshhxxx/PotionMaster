@@ -1,7 +1,8 @@
+
 package utils;
 
 import model.Ingredient;
-import java.util.List;
+import DSA.*;
 
 public class ConsoleUI {
     // Remove the static Scanner field and use InputManager instead
@@ -15,7 +16,6 @@ public class ConsoleUI {
         return InputManager.readLine();
     }
 
-<<<<<<< HEAD
     // public static void showMenu() {
     //     System.out.println(ConsoleColors.CYAN_BOLD + "\n┌───────────────── MAIN MENU ─────────────────┐" + ConsoleColors.RESET);
     //     System.out.println(ConsoleColors.CYAN + "│                                              │" + ConsoleColors.RESET);
@@ -47,22 +47,6 @@ public static void showMenu() {
 
     public static void GameMenu() {
         System.out.println("1. 🧚 Fight");
-=======
-    public static void showMenu() {
-        System.out.println("\n1. Start Mixing Potions");
-        System.out.println("2. View Player Stats");
-        System.out.println("3. View Brewed Potions");
-        System.out.println("4. View Inventory"); // New option to view inventory
-        System.out.println("5. View Ingredient Stack");
-        System.out.println("6. Play Game"); // New option to view ingredient stack
-        System.out.println("7. Exit");
-
-        System.out.print("Choose: ");
-    }
-
-    public static void GameMenu() {
-        System.out.println("1. 🤺Fight");
->>>>>>> 8afef9687c7cdae725db756cf7d3433f1997f942
         System.out.println("2. Player Stats");
         System.out.println("3. Exit");
 
@@ -70,7 +54,6 @@ public static void showMenu() {
     }
 
     public static int getChoice() {
-<<<<<<< HEAD
         try {
             int choice = InputManager.readInt();
             return choice;
@@ -87,11 +70,6 @@ public static void showMenu() {
 
     public static String getLine() {
         return InputManager.readLine();
-=======
-        int choice = sc.nextInt();
-        sc.nextLine(); // Consume the remaining newline
-        return choice;
->>>>>>> 8afef9687c7cdae725db756cf7d3433f1997f942
     }
     // Based on your code and placeholder location, it seems there was a question about fixing a loop, but I don't see the loop implementation in the provided code. To properly help, I would need:
 
@@ -100,7 +78,7 @@ public static void showMenu() {
     // 3. What you're trying to accomplish with the loop
 
     // The placeholder is positioned between `getChoice()` and `displayIngredients()` methods in the ConsoleUI class. If you share the problematic loop code and describe the issue, I can help fix it.
-    public static void displayIngredients(List<Ingredient> list) {
+    public static void displayIngredients(ArrayList<Ingredient> list) {
         System.out.println("\n🧪 Available Ingredients:");
         int i = 1;
         for (Ingredient ing : list) {

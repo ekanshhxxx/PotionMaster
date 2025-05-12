@@ -1,21 +1,19 @@
 package model;
+import DSA.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class Recipe {
-    private List<String> ingredients;
+    private ArrayList<String> ingredients;
     private Potion potion;
     private int requiredLevel;
     
-    public Recipe(List<String> ingredients, Potion potion, int requiredLevel) {
+    public Recipe(ArrayList<String> ingredients, Potion potion, int requiredLevel) {
         this.ingredients = ingredients;
         this.potion = potion;
         this.requiredLevel = requiredLevel;
     }
     
-    public List<String> getIngredients() {
+    public ArrayList<String> getIngredients() {
         return ingredients;
     }
     
@@ -31,18 +29,15 @@ public class Recipe {
         return potion;
     }
     
-    public boolean matches(List<String> inputIngredients) {
+    public boolean matches(ArrayList<String> inputIngredients) {
         if (inputIngredients.size() != ingredients.size()) {
             return false;
         }
         
-        // Make a copy of the lists so we can sort them
-        List<String> sortedInput = new ArrayList<>(inputIngredients);
-        List<String> sortedRecipe = new ArrayList<>(ingredients);
+        // Sort both lists directly
+        ingredients.bubbleSort();
+        inputIngredients.bubbleSort();
         
-        Collections.sort(sortedInput);
-        Collections.sort(sortedRecipe);
-        
-        return sortedInput.equals(sortedRecipe);
+        return ingredients.equals(inputIngredients);
     }
 }

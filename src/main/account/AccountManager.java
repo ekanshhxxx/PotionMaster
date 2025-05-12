@@ -3,23 +3,17 @@ package main.account;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-// Remove these imports since they're in the same package
-// import main.account.UserSessionTracker;
-// import main.account.UserSessionTracker.UserSession;
+import DSA.*;
+
 
 public class AccountManager {
     private static final String DATA_DIRECTORY = "playerdata";
-    private Map<String, PlayerAccount> loggedInAccounts;
-    private Map<String, UserSessionTracker.UserSession> activeSessions;
+    private MapLinkedList<String, PlayerAccount> loggedInAccounts;
+    private MapLinkedList<String, UserSessionTracker.UserSession> activeSessions;
     
     public AccountManager() {
-        loggedInAccounts = new HashMap<>();
-        activeSessions = new HashMap<>();
+        loggedInAccounts = new MapLinkedList<>();
+        activeSessions = new MapLinkedList<>();
         
         // Create data directory if it doesn't exist
         File directory = new File(DATA_DIRECTORY);
@@ -87,29 +81,33 @@ public class AccountManager {
     
     public void saveAccount(PlayerAccount account) throws IOException {
         String filename = DATA_DIRECTORY + File.separator + account.getUsername() + ".txt";
+        System.out.println(account.getUsername());
         try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
             // Write account data as plain text
             writer.println("username=" + account.getUsername());
             writer.println("password=" + account.getPassword());
             writer.println("level=" + account.getLevel());
-            writer.println("experience=" + account.getExperience());
+            writer.println("GameLevel="+ account.getGameLevel());
+            writer.println("rank=" + account.getRank());
+            writer.println("tier=" + account.getTier());
+            writer.println("experience=" + account.getXp());
             writer.println("credits=" + account.getCredits());
             writer.println("health=" + account.getHealthPoints());
             
             // Write brewed potions if any
-            List<String> potions = account.getPotions();
+            ArrayList<String> potions = account.getPotions();
             if (!potions.isEmpty()) {
                 writer.println("potions=" + String.join(",", potions));
             }
             
             // Write active quests
-            List<String> activeQuests = account.getActiveQuests();
+            ArrayList<String> activeQuests = account.getActiveQuests();
             if (!activeQuests.isEmpty()) {
                 writer.println("activeQuests=" + String.join(",", activeQuests));
             }
             
             // Write completed quests
-            List<String> completedQuests = account.getCompletedQuests();
+            ArrayList<String> completedQuests = account.getCompletedQuests();
             if (!completedQuests.isEmpty()) {
                 writer.println("completedQuests=" + String.join(",", completedQuests));
             }
@@ -124,12 +122,17 @@ public class AccountManager {
             String line;
             String storedPassword = null;
             int level = 1;
+            int Gamelevel = 1;
+            String rank = null;
+            String tier = null;
+            int defeatedMonsters =0;
             int experience = 0;
             int credits = 0;
             int health = 100;
-            List<String> potions = new ArrayList<>();
-            List<String> activeQuests = new ArrayList<>();    // Add this line
-            List<String> completedQuests = new ArrayList<>(); // Add this line
+            ArrayList<String> ingedientList = new ArrayList<>();
+            ArrayList<String> potions = new ArrayList<>();
+            ArrayList<String> activeQuests = new ArrayList<>();    // Add this line
+            ArrayList<String> completedQuests = new ArrayList<>(); // Add this line
             
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("=", 2);
@@ -154,20 +157,55 @@ public class AccountManager {
                     case "health":
                         health = Integer.parseInt(value);
                         break;
+                    case "rank":
+                        rank = value;
+                        break;
+                    case "tier":
+                        tier = value;
+                        break;
+                    case "defeatedMonsters":
+                        defeatedMonsters = Integer.parseInt(value);
+                        break;
+                    // Read potions if any
+                    case "GameLevel":
+                        Gamelevel = Integer.parseInt(value);
+                        break;
+
+                    case "ingedientList":
+                        if (!value.isEmpty()) {
+                            String[] ingredients = value.split(",");
+                            ingedientList = new ArrayList<>();
+                            for (String ingredient : ingredients) {
+                                ingedientList.add(ingredient);
+                            }
+                        }
+                        break;
                     case "potions":
                         if (!value.isEmpty()) {
-                            potions = Arrays.asList(value.split(","));
+                            String[] potionArray = value.split(",");
+                            potions = new ArrayList<>();
+                            for (String potion : potionArray) {
+                                potions.add(potion);
+                            }
                         }
                         break;
                     // Add these new cases:
                     case "activeQuests":
                         if (!value.isEmpty()) {
-                            activeQuests = Arrays.asList(value.split(","));
+                            String[] questArray = value.split(",");
+                            activeQuests = new ArrayList<>();
+                            for (String quest : questArray) {
+                                activeQuests.add(quest);
+                            }
                         }
                         break;
                     case "completedQuests":
                         if (!value.isEmpty()) {
-                            completedQuests = Arrays.asList(value.split(","));
+                            String[] questArray = value.split(",");
+                            completedQuests = new ArrayList<>();
+                            for (String quest : questArray) {
+                                completedQuests.add(quest);
+                            }
                         }
                         break;
                 }
@@ -178,7 +216,15 @@ public class AccountManager {
             account.setLevel(level);
             account.setExperience(experience);
             account.setCredits(credits);
-            account.setHealthPoints(health);
+            account.setHealthPoints(health);    
+            account.setGameLevel(Gamelevel);
+            account.setRank(rank);
+            account.setTier(tier);
+            account.setDefeatedMonsters(defeatedMonsters);
+            account.setIngredientList(ingedientList);
+            account.setInitialXP(experience);
+            account.setInitialLevel(level);
+            account.setInitialGameLevel(Gamelevel);
             
             for (String potion : potions) {
                 account.addPotion(potion);
@@ -222,7 +268,7 @@ public class AccountManager {
                 // Calculate stats for session tracking
                 int initialXP = account.getInitialXP();
                 int initialLevel = account.getInitialLevel();
-                int xpGained = account.getExperience() - initialXP;
+                int xpGained = account.getXp() - initialXP;
                 int levelsGained = account.getLevel() - initialLevel;
                 
                 // Track logout
@@ -231,9 +277,7 @@ public class AccountManager {
                 saveAccount(account); // Save account data on logout
                 loggedInAccounts.remove(username);
                 activeSessions.remove(username);
-                
-                System.out.println("Session ended. You gained " + xpGained + " XP and " + 
-                                   levelsGained + " levels this session.");
+    
             }
         } catch (IOException e) {
             System.err.println("Error during logout: " + e.getMessage());
@@ -244,7 +288,7 @@ public class AccountManager {
         return loggedInAccounts.containsKey(username);
     }
     
-    public Map<String, PlayerAccount> getLoggedInAccounts() {
+    public MapLinkedList<String, PlayerAccount> getLoggedInAccounts() {
         return loggedInAccounts;
     }
 }
