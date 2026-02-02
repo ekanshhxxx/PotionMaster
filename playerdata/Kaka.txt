@@ -1,0 +1,9 @@
+username=Kaka
+password=8cde7d92494c1112b6c12bb2bf6ad05828200633ceddd7a796ab6d42bfb72d91
+level=1
+GameLevel=2
+rank=Novice Alchemist
+tier=Initiation Tier
+experience=10
+credits=55
+health=100

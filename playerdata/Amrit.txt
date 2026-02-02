@@ -1,0 +1,9 @@
+username=Amrit
+password=95ef3297bec5402a657683df665856988b1f76b7e3b7c8789c325670768d3719
+level=1
+GameLevel=1
+rank=Novice Alchemist
+tier=Initiation Tier
+experience=0
+credits=50
+health=100

@@ -1,0 +1,9 @@
+username=Gurkirat
+password=372aa8e3a654f15550210018a26059b6904a4a15b440e1efcb75f975377cfaf5
+level=1
+GameLevel=1
+rank=Novice Alchemist
+tier=Initiation Tier
+experience=0
+credits=50
+health=100
